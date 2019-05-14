@@ -20,28 +20,35 @@ void ReadLines() {
     FILE* mainFile;
 
     Stack stack = NULL;
-    stack = Push(stack, 'z'); // Initial character of the stack
+    stack = AddNode('z'); // Initial character of the stack
+    PrintStack(stack);
 
     do {
         mainFile = SelectFile();
     } while(mainFile == NULL);
 
-    char character, wrong, missing;
+    char character = ' ', wrong = ' ', missing = ' ', last = ' ';
     int actualStage = 0; // posibles stages 0 or 1
     int line = 1;
     int balanced = 1;
 
     while((character = fgetc(mainFile)) != EOF) {
-        //printf("%c\n", character);
+        printf("%c\n", character);
         if(character == '\n') {
             line++;
         }
+        else {
+            last = character;
+        }
 
         if(actualStage == 0) {
+            printf("flag\n");
             switch(character) {
                 // Push cases
                 case '{':
-                    stack = Push(stack, '*');
+                    printf("flag2\n");
+                    stack = Push(stack, '*'); // ¡¡¡¡ERROR when user choise s or S!!!!
+                    printf("flag3\n");
                     break;
                 case '(':
                     stack = Push(stack, '#');
@@ -127,11 +134,13 @@ void ReadLines() {
                     break;
             }
         }
-
-        //PrintStack(stack);
-        //printf("\n");
+        printf("flag4\n");
+        PrintStack(stack);
+        printf("\n");
         if(balanced != 1) {
             wrong = TopElement(stack);
+
+            printf("top: %c\n", wrong);
 
             switch(wrong) {
                 case '*':
@@ -143,6 +152,8 @@ void ReadLines() {
                 case '+':
                     missing = ']';
                     break;
+                case 'z':
+                    missing = last;
                 default:
                     break;
             }
@@ -151,9 +162,12 @@ void ReadLines() {
             break;
         }
     }
-    fclose(mainFile);
 
+    
     if(balanced) {
         printf("Los par%cntesis est%cn balanceados.\n", 130, 160);
     }
+
+    EmptyStack(stack);
+    fclose(mainFile);
 }

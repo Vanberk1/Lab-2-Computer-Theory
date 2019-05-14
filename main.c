@@ -11,7 +11,7 @@ int main() {
 
 		printf("\nDesea probar otro archivo S/N? ");
 		fflush(stdin);
-		c = getchar();
+		scanf(" %c", &c);
 	} while(c == 's' || c == 'S');
 	
 

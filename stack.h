@@ -127,6 +127,18 @@ void PrintStack(Stack stack) {
     aux = NULL;
 }
 
+void EmptyStack(Stack stack) {
+    Stack aux;
+   
+    while (stack != NULL) {
+        aux = stack;
+        stack = stack->next;
+        aux->next = NULL;
+        free(aux);
+    }
+}
+
+
 
 
 
