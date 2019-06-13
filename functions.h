@@ -21,34 +21,31 @@ void ReadLines() {
 
     Stack stack = NULL;
     stack = AddNode('z'); // Initial character of the stack
-    PrintStack(stack);
 
     do {
         mainFile = SelectFile();
     } while(mainFile == NULL);
 
-    char character = ' ', wrong = ' ', missing = ' ', last = ' ';
-    int actualStage = 0; // posibles stages 0 or 1
+    char character = ' ', missing = ' ';
+    int actualStage = 0;
     int line = 1;
-    int balanced = 1;
+    int correct = 0;
 
-    while((character = fgetc(mainFile)) != EOF) {
-        printf("%c\n", character);
+    while((character = fgetc(mainFile)) != EOF &&
+          actualStage != 2 && actualStage != 3 && actualStage != 4 &&
+          actualStage != 5 && actualStage != 6 && actualStage != 7) {
         if(character == '\n') {
             line++;
         }
-        else {
-            last = character;
-        }
 
         if(actualStage == 0) {
-            printf("flag\n");
+            //printf("flag\n");
             switch(character) {
                 // Push cases
                 case '{':
-                    printf("flag2\n");
+                    //printf("flag2\n");
                     stack = Push(stack, '*'); // ¡¡¡¡ERROR when user choise s or S!!!!
-                    printf("flag3\n");
+                    //printf("flag3\n");
                     break;
                 case '(':
                     stack = Push(stack, '#');
@@ -61,29 +58,29 @@ void ReadLines() {
                 case '}':
                     if(TopElement(stack) == '*') {
                         stack = Pop(stack);
+                        actualStage = 1;
                     }
                     else {
-                        balanced = 0;
+                        actualStage = 7;
                     }
-                    actualStage = 1;
                     break;
                 case ')':
                     if(TopElement(stack) == '#') {
                         stack = Pop(stack);
+                        actualStage = 1;
                     }
                     else {
-                        balanced = 0;
+                        actualStage = 5;
                     }
-                    actualStage = 1;
                     break;
                 case ']':
                     if(TopElement(stack) == '+') {
                         stack = Pop(stack);
+                        actualStage = 1;
                     }
                     else {
-                        balanced = 0;
+                        actualStage = 6;
                     }
-                    actualStage = 1;
                     break;
                 default:
                     break;
@@ -97,7 +94,7 @@ void ReadLines() {
                         stack = Pop(stack);
                     }
                     else {
-                        balanced = 0;
+                        actualStage = 4;
                     }
                     break;
                 case ')':
@@ -105,7 +102,7 @@ void ReadLines() {
                         stack = Pop(stack);
                     }
                     else {
-                        balanced = 0;
+                        actualStage = 2;
                     }
                     break;
                 case ']':
@@ -113,7 +110,7 @@ void ReadLines() {
                         stack = Pop(stack);
                     }
                     else {
-                        balanced = 0;
+                        actualStage = 3;
                     }
                     break;
 
@@ -134,39 +131,61 @@ void ReadLines() {
                     break;
             }
         }
-        printf("flag4\n");
-        PrintStack(stack);
-        printf("\n");
-        if(balanced != 1) {
-            wrong = TopElement(stack);
 
-            printf("top: %c\n", wrong);
+    }
+    //PrintStack(stack);
+    //printf("\n");
+    char top = TopElement(stack);
 
-            switch(wrong) {
-                case '*':
-                    missing = '}';
-                    break;
-                case '#':
-                    missing = ')';
-                    break;
-                case '+':
-                    missing = ']';
-                    break;
-                case 'z':
-                    missing = last;
-                default:
-                    break;
+    //printf("top: %c\n", top);
+
+    switch(actualStage) {
+        // Error stages
+        case 2:
+            missing = '('; break;
+        case 3:
+            missing = '['; break;
+        case 4:
+            missing = '{'; break;
+        case 5:
+            missing = '('; break;
+        case 6:
+            missing = '['; break;
+        case 7:
+            missing = '{'; break;
+
+        case 1:
+            if(top == 'z') {
+                printf("Los par%cntesis est%cn balanceados.\n", 130, 160);
+                correct = 1;
             }
-
-            printf("Tiene un error de balance de par%cntesis en la l%cnea %d. Se esperaba un: %c\n", 130, 161, line, missing);
+            else if(top == '#') { // checking the top of the list
+                missing = ')';
+            }
+            else if(top == '*') {
+                missing = '}';
+            }
+            else if(top == '+') {
+                missing = ']';
+            }
             break;
-        }
+        case 0:
+            if(top == '#') {
+                missing = ')';
+            }
+            else if(top == '*') {
+                missing = '}';
+            }
+            else if(top == '+') {
+                missing = ']';
+            }
+            break;
+        default:
+            break;
     }
 
-    
-    if(balanced) {
-        printf("Los par%cntesis est%cn balanceados.\n", 130, 160);
-    }
+    if(!correct)
+        printf("Tiene un error de balance de par%cntesis en la l%cnea %d. Se esperaba un: %c\n", 130, 161, line, missing);
 
     EmptyStack(stack);
     fclose(mainFile);

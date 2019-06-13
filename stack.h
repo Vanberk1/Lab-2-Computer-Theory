@@ -37,7 +37,6 @@ Stack AddNode(char x)
 Stack Push(Stack stack, char x) {
     Stack nNode;
     nNode = AddNode(x);
-    
     nNode->next = stack;
     stack = nNode;
     nNode = NULL;
